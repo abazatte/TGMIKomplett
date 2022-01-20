@@ -1,0 +1,83 @@
+	la   $k0,_testdata 	# Adresse der Daten
+	lw   $k1,0($k0)		# Anzahl der TestfÃ¤lle nach $k1
+	addi $k0,$k0,8		# Adressierung der Testedaten
+	
+test_loop:	
+	addi $sp,$sp,-12       # Stackplatz reservieren (Operanden und Ergebnis)
+                        
+	lw $t0, 0($k0)                    # Operand 1 nach $t0 ...
+	sw $t0, 8($sp)                    # ... und auf dem Stack ablegen
+	lw $t0, 4($k0)                    # Operand 2 nach $t0 ...
+	sw $t0, 4($sp)                    # ... und auch ab auf den Stack
+	                    
+	jal ggt                    # zu testende Funktion aufrufen
+	nop                    
+	lw $at,0($sp)                     # Ergebnis der Funktion nach $at
+	lw $t0,8($k0)                     # Erwartetes Ergebnis nach $t0                      
+	addi $sp,$sp,12                     # Stack wieder herstellen (= reservierten Platz freigeben)	                    
+	bne $at,$t0, error                   # Fehler? Dann Fehlermeldung ausgeben und Programm beenden	                    
+	nop                    
+	addi $k0,$k0,12                    # Adressierung neuer Daten
+	addi $k1,$k1,-1	                    # Anzahl TestfÃ¤lle dekrementieren
+	bne  $k1,$0,test_loop  # noch mehr TestfÃ¤lle? Dann nÃ¤chste Testdaten lesen
+	nop 
+	
+
+success:				# Positive Meldung ausgeben und Programm beenden
+la $a0,my_message
+ori $v0,$0,4
+syscall
+ori $v0 , $0,10
+syscall
+
+error:					# Fehlermeldung ausgeben und Programm beenden
+la $a0,my_messag
+ori $v0,$0,4
+syscall
+ori $v0 , $0,10
+syscall
+
+ggt:
+addi $sp,$sp,-16			# Platz auf Stack schaffen
+nop					# nop
+lw $t2,20($sp)				# b von Stack holen
+lw $t3,24($sp)				# a von Stack holen
+bne  $t3,$0, Else			# if-Else-Abfrage
+nop					# nop
+add $v0,$0,$t2	
+sw $v0,16($sp)				# Rückgabewert = b
+j  Endif				# Sprung zu Endif
+nop					# nop
+Else:					# Else 
+	while:				# ab hier while Schleife weitermachen
+	beq  $t2, $0, Endwhile
+	bgt $t3,$t2, if
+	nop
+	sub $t2,$t2,$t3
+	j endif
+	nop
+	if:
+	sub $t3,$t3,$t2
+	endif:
+	nop
+j while
+nop
+Endwhile:
+add $v0,$0,$t3	
+sw $v0,16($sp)
+nop		
+					
+					
+Endif:					# Endif, Else übersprungen
+addi $sp,$sp,16				# Stack wird zurückgesetzt	
+jr $ra					# jump Befehl zum Hauptprogramm
+nop					# nop
+	
+.data # auf Datensegment umschalten
+my_messag:
+.asciiz "Nicht korrekt"	
+
+my_message:
+.asciiz "Korrekt"
+    
+ .include "testdata_ggt.asm"

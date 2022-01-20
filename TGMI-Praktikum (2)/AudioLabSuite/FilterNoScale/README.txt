@@ -1,0 +1,1 @@
+Diese Version normiert NICHT bei der Anzeige des Frequenzgangs

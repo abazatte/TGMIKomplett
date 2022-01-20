@@ -1,0 +1,11 @@
+taskkill /F /IM Signalgenerator.exe /T
+taskkill /F /IM Oscilloscope.exe /T
+taskkill /F /IM Spectrumanalyzer.exe /T
+taskkill /F /IM Filter.exe /T
+taskkill /F /IM Playback.exe /T
+taskkill /F /IM Record.exe /T
+taskkill /F /IM TransformDemo.exe /T
+taskkill /F /IM FirDesigner.exe /T
+taskkill /F /IM Resampler.exe /T
+taskkill /F /IM ImageFilter.exe /T
+taskkill /F /IM ImageDFT.exe /T
